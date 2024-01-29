@@ -18,7 +18,7 @@ Citizen.CreateThread(function()
                     timer = timer - 1
                     if timer <= 0 then
                         inrob = false
-                        ESX.ShowNotification("You now got your reward.. lets go!")
+                        ESX.ShowNotification(Locale("finished_robbery"))
                         TriggerServerEvent('robbery:reward')
                         TaskSmartFleePed(npc, PlayerPedId(), 1000.0, -1, true, true)
                         Citizen.Wait(5 * 60)
@@ -28,30 +28,34 @@ Citizen.CreateThread(function()
                 if inrob == nil or inrob == false then
                     timer = Config.RobberyTime
                     inrob = true
-                    ESX.ShowNotification(
-                        "You are now Robbing.. the Police Officers got alerted! the npc is calling the police! but if you stay here you will get a reward!")
+                    ESX.ShowNotification(Locale("started_robbery"))
+                    AlertPolice(npc)
                 end
                 if IsPedDeadOrDying(npc) then
                     inrob = false
-                    ESX.ShowNotification("You are now not Robbing.. (NPC Died)")
+                    ESX.ShowNotification(Locale("npc_died"))
+                    Citizen.Wait(1000)
                     goto restart
                 end
             elseif inrob then
                 inrob = false
-                ESX.ShowNotification("You are now not Robbing..")
+                ESX.ShowNotification(Locale("stopped_robbery"))
+                Citizen.Wait(1000)
                 goto restart
             end
         elseif inrob then
             inrob = false
             ESX.ShowNotification("You are now not Robbing..")
+            Citizen.Wait(1000)
             goto restart
         end
         ::restart::
     end
 end)
 
-
-
+function Locale(msg)
+    return Translation[Config.Locale or "de"][msg]
+end
 
 function SpawnTestNPC()
     local model = "a_m_m_skater_01" -- Adjust this to your NPC model
